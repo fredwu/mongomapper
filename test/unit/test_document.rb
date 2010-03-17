@@ -111,6 +111,13 @@ class DocumentTest < Test::Unit::TestCase
       doc.to_param.should be_instance_of(String)
     end
     
+    should "have to_key that is array representation of id" do
+      doc = @document.new(:id => Mongo::ObjectID.new)
+      doc.save
+      doc.to_key.should == [doc.id.to_s]
+      doc.to_key.should be_instance_of(Array)
+    end
+    
     should "have access to logger" do
       doc = @document.new
       doc.logger.should == @document.logger
@@ -158,6 +165,19 @@ class DocumentTest < Test::Unit::TestCase
         doc = @document.new
         doc.id = '1234'
         doc.new?.should be_true
+      end
+      
+      should "have to_key that returns nil on non-persisted records (new records)" do
+        @document.new.to_key.should be(nil)
+      end
+    end
+    
+    context "destroyed?" do
+      should "have to_key that returns nil on non-persisted records (destroyed records)" do
+        doc = @document.new
+        doc.save
+        doc.destroy
+        doc.to_key.should be(nil)
       end
     end
 

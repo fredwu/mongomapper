@@ -9,13 +9,21 @@ module MongoMapper
         def to_param
           id.to_s
         end
-
+        
+        def to_key
+          persisted? ? [id.to_s] : nil
+        end
+        
         def to_model
           self
         end
-
+        
         def new_record?
           new?
+        end
+        
+        def persisted?
+          !(new_record? || destroyed?)
         end
 
         def read_attribute(name)
